@@ -1,7 +1,14 @@
-# 📱 Simple Sign-Up Screen
+# 🚌 Ford Shuttle Track app
 
-This repository contains a **basic sign-up screen** built using React Native (or React, if applicable).  
-It currently features a simple layout and input field structure as a foundation for further development.
+
+This repository contains the **Ford Shuttle Application** built using **React Native**.  
+The app is designed to support features such as shuttle tracking, scheduling, and real-time updates.  
+.
+
+## 🎨 Figma Design
+
+You can view the UI design on Figma:  
+🔗 [Figma Design Link](https://www.figma.com/community/file/1265695782433908622)
 
 ## 🎨 Figma Design
 
