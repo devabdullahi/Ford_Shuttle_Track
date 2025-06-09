@@ -10,12 +10,42 @@ You can view the UI design on Figma:
 
 ## 🚀 Getting Started
 
+# ⚙️ React Native Installation Guide
+
+This project uses **React Native**. Follow the platform-specific setup instructions below to get started.
+
+---
+
+## 🪟 Windows Setup (for Android Development)
+
+1. **Install Node.js**
+   - Download and install from: [https://nodejs.org/](https://nodejs.org/)
+
+2. **Install Java Development Kit (JDK)**
+   - Download JDK 17 or higher: [https://www.oracle.com/java/technologies/javase-downloads.html](https://www.oracle.com/java/technologies/javase-downloads.html)
+
+3. **Install Android Studio**
+   - Download and install from: [https://developer.android.com/studio](https://developer.android.com/studio)
+   - During setup, ensure the following are selected:
+     - Android SDK
+     - Android SDK Platform
+     - Android Virtual Device (AVD)
+
+4. **Set up Environment Variables**
+   Add the following to your environment variables (usually in `System Properties > Environment Variables`):
+
+   ```bash
+   ANDROID_HOME = C:\Users\<YourUsername>\AppData\Local\Android\Sdk
+
+5. ** Run this command after installing everything**
+   ```
+   npm install -g react-native-cli
+
 To run the project locally:
 
 ```bash
 # Install dependencies
 npm install
-and install react native
 
 # Start the development server
 npm run web || npm run (whatever phone platform you perfer)
