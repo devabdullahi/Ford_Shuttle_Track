@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+
 import {
   Text,
   View,
@@ -9,6 +10,7 @@ import {
   ImageBackground,
   // You might need Platform or other imports depending on further styling
 } from 'react-native';
+
 
 const SignUpScreen = () => {
   const [name, setName] = useState<string>('');
@@ -33,16 +35,16 @@ const SignUpScreen = () => {
   return (
     <ImageBackground
       source={require('../assets/Backgrounds/MainFordLogo.jpg')}
-      style={styles.background}
+      style={styles.SignUpbackground}
       resizeMode="cover"
     >
       {/* Semi-transparent Overlay */}
       {/* This view sits between the background image and the content */}
-      <View style={styles.overlay} />
+      <View style={styles.SignUpOverlay} />
 
       {/* Main Content Container */}
       {/* This view holds all your form elements */}
-      <View style={styles.container}>
+      <View style={styles.SignUpcontainer}>
         <Text style={styles.signUpText}>Sign Up</Text>
 
         {/* Name Section */}
@@ -110,27 +112,33 @@ const SignUpScreen = () => {
             <Text style={styles.signUpGoogleButtonText}>SIGN UP WITH GOOGLE</Text>
           </View>
         </TouchableOpacity>
+
+        <View style={styles.AlreadyHaveAnAccountContainer}>
+          <Text style={styles.AlreadyHaveAnAccountText}>Already have an account? {' '}
+            <Text style={styles.AlreadyHaveAnAccountLink} onPress={() => navigation.navigate('LogIn')}>
+              Log in
+            </Text>
+          </Text>
+        </View>
       </View>
     </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
-  background: {
+  SignUpbackground: {
     flex: 1,
     width: '100%',
     height: '100%',
   },
   // New Overlay Style
-  overlay: {
+  SignUpOverlay: {
     ...StyleSheet.absoluteFillObject, // Position over the entire background
     backgroundColor: 'rgba(0, 0, 0, 0.6)', // Black with 60% opacity
     // You could try 'rgba(0, 50, 100, 0.5)' for a Ford blue tint overlay
   },
-  container: {
+  SignUpcontainer: {
     flex: 1,
-    // Remove or comment out backgroundColor: '#fff' here!
-    // The overlay provides the background effect
     alignItems: 'center',
     paddingTop: 50, // Increased padding top
     paddingHorizontal: 20, // Add some horizontal padding
@@ -177,7 +185,7 @@ const styles = StyleSheet.create({
     paddingVertical: 16, // More vertical padding
     paddingHorizontal: 40,
     borderRadius: 8, // Match input border radius
-    width: '100%', // Make button full width of container
+    width: '50%', // Make button full width of container
     // borderColor: 'black', // Border not needed if background is solid black
     // borderWidth: 1,
     elevation: 5, // Add a subtle shadow (Android)
@@ -199,7 +207,7 @@ const styles = StyleSheet.create({
     paddingVertical: 16, // Match padding of other button
     paddingHorizontal: 40,
     borderRadius: 8, // Match border radius
-    width: '100%', // Make button full width
+    width: '50%', // Make button full width
     borderColor: '#ccc', // Add a light border
     borderWidth: 1,
      elevation: 5, // Add a subtle shadow (Android)
@@ -212,7 +220,21 @@ const styles = StyleSheet.create({
         fontWeight: '600', // Match other button text weight
         fontSize: 18, // Match other button text size
         color: 'black', // Ensure text is black on white button
-   }
+   },
+   
+  AlreadyHaveAnAccountContainer: {
+  marginTop: 20,
+  alignItems: 'center',
+},
+AlreadyHaveAnAccountText: {
+  color: 'white',
+  fontSize: 14,
+},
+AlreadyHaveAnAccountLink: {
+  color: 'blue',
+  fontWeight: '600',
+},
+
 });
 
 export default SignUpScreen;
