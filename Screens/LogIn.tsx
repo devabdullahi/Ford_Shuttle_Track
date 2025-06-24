@@ -11,7 +11,7 @@ import {
 
 
 
-const LogInScreen = () => {
+const LogInScreen = ({navigation}) => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
 
@@ -90,7 +90,7 @@ const LogInScreen = () => {
 
         <View style={styles.DontHaveAccountContainer}>
             <Text style={styles.DontHaveAccountText}>Don't have an account? {' '}
-                <Text style={styles.DontHaveAccountLink} onPress={() => navigation.navigate('SignUp')}>
+                <Text style={styles.DontHaveAccountLink} onPress={() => navigation.navigate('SignUpScreen')}>
                     Sign Up
                 </Text>
             </Text>
