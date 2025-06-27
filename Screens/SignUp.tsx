@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 
 
-const SignUpScreen = () => {
+const SignUpScreen = ({navigation}) => {
   const [name, setName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -115,7 +115,7 @@ const SignUpScreen = () => {
 
         <View style={styles.AlreadyHaveAnAccountContainer}>
           <Text style={styles.AlreadyHaveAnAccountText}>Already have an account? {' '}
-            <Text style={styles.AlreadyHaveAnAccountLink} onPress={() => navigation.navigate('LogIn')}>
+            <Text style={styles.AlreadyHaveAnAccountLink} onPress={() => navigation.navigate('LogInScreen')}>
               Log in
             </Text>
           </Text>
