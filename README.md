@@ -8,12 +8,8 @@ The app is designed to support features such as shuttle tracking, scheduling, an
 ## 🎨 Figma Design
 
 You can view the UI design on Figma:  
-🔗 [Figma Design Link](https://www.figma.com/community/file/1265695782433908622)
+🔗 [Figma Design Link](https://www.figma.com/design/ngOjuPoDAlDeeGXJpt0uSV/Untitled?node-id=0-1&t=w7Li4RxqLIMvvKb4-1)
 
-## 🎨 Figma Design
-
-You can view the UI design on Figma:  
-🔗 [Figma Design Link](https://www.figma.com/community/file/1265695782433908622)
 
 ## 🚀 Getting Started
 
