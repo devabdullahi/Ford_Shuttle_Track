@@ -4,7 +4,7 @@ import LogInScreen from './Screens/LogIn';
 import { NavigationContainer } from '@react-navigation/native';
 import RootNavigator from './Navigation/RootNavigator';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { AuthProvider } from "./AuthContext";
+import { AuthProvider } from "./contexts/AuthContext";
 
 const Stack = createNativeStackNavigator();
 

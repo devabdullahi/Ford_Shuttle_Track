@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { auth } from '../firebase_config';
+import { useAuth } from "../contexts/AuthContext";
 
 import {
   Text,
@@ -14,16 +16,29 @@ import {
 
 const SignUpScreen = ({navigation}) => {
   const [name, setName] = useState<string>('');
-  const [email, setEmail] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
-
+  const { register } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   // We'll add a simple function to handle sign up action later
-  const handleSignUp = () => {
+  const handleSignUp = async () => {
+    setError("");
 
-    
-      console.log('Signing up with:', { name, email, password });
+    // validate email and password
 
-    // Add your sign-up logic here (e.g., API call, validation)
+
+
+    setLoading(true);
+    console.log('Signing up with:', { name, email, password });
+    try {
+      await register(email, password);
+    } catch (err) {
+      setError("Failed to sign up: " + err.message);
+      console.log("Login error:", err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
    const handleGoogleSignUp = () => {
