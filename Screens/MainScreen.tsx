@@ -5,7 +5,13 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  Linking
 } from 'react-native';
+
+//add percentage of occupancy
+
+//Work on the shuttle progress bar
+
 
 const stops = [
   { id: 1, name: 'Manufacturing Plant', status: 'Completed', timeLabel: 'Departed 12:15 PM', iconType: 'check' },
@@ -13,6 +19,12 @@ const stops = [
   { id: 3, name: 'Dearborn Plant - Gate 3', status: 'Next', timeLabel: 'ETA: 12:27 PM', iconType: 'clock' },
   { id: 4, name: 'Downtown Transit Hub', status: 'Upcoming', timeLabel: 'ETA: 12:35 PM', iconType: 'circle' },
 ];
+
+
+const handleCall = () => {
+  const phoneNumber = 'tel:3132693165'; 
+  Linking.openURL(phoneNumber);
+};
 
 const statusColors = {
   Completed: '#bbb',
@@ -44,7 +56,13 @@ const NavigationBar = () => {
 };
 
 const MainScreen = () => {
-  const onQuickActionPress = (action) => console.log('Quick action pressed:', action.label);
+  const onQuickActionPress = (action) => {
+    console.log('Quick action pressed:', action.label);
+
+    if (action.label == 'Book Ride') {
+      handleCall();
+  };
+}
 
   return (
     <>
@@ -95,9 +113,7 @@ const MainScreen = () => {
             <View style={styles.detailsColumn}><Text style={styles.detailsLabel}>Route</Text><Text style={styles.detailsValue}>Route 15</Text></View>
             <View style={styles.detailsColumn}><Text style={styles.detailsLabel}>Vehicle ID</Text><Text style={styles.detailsValue}>FRD-2847</Text></View>
           </View>
-          <View style={styles.detailsRow}>
-            <View style={styles.detailsColumn}><Text style={styles.detailsLabel}>Capacity</Text><Text style={styles.detailsValue}>18/45 passengers</Text></View>
-            <View style={styles.detailsColumn}><Text style={styles.detailsLabel}>Driver</Text><Text style={styles.detailsValue}>Mike Johnson</Text></View>
+          <View style={styles.detailsRow}> <View style={styles.detailsColumn}><Text style={styles.detailsLabel}>Driver Number</Text><Text style={styles.detailsValue}>000-000-0000</Text></View>
           </View>
         </View>
 
@@ -110,6 +126,7 @@ const MainScreen = () => {
                   style={styles.quickActionButton}
                   activeOpacity={0.7}
                   onPress={() => onQuickActionPress(action)}
+
                 >
                   <Text style={styles.quickActionIcon}>{action.icon}</Text>
                   <Text style={styles.quickActionLabel}>{action.label}</Text>
