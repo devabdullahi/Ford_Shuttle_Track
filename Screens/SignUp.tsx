@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { auth } from '../firebase_config';
 import { useAuth } from "../contexts/AuthContext";
 
 import {
@@ -27,13 +26,12 @@ const SignUpScreen = ({navigation}) => {
 
     // validate email and password
 
-
-
     setLoading(true);
     console.log('Signing up with:', { name, email, password });
     try {
       await register(email, password);
     } catch (err) {
+      // use switch/case to display output; create another view to display text to user
       setError("Failed to sign up: " + err.message);
       console.log("Login error:", err.message);
     } finally {

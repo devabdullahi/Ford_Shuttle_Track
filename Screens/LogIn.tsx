@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useAuth } from "../contexts/AuthContext";
+
 import {
   Text,
   View,
@@ -10,14 +12,37 @@ import {
 } from 'react-native';
 
 
-
 const LogInScreen = ({navigation}) => {
-  const [email, setEmail] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
-
-  const handleLogin = () => {
-    console.log('Logging in with:', { email, password });
-    // Add your login logic here
+  const [name, setName] = useState<string>('');
+  const { login } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  
+  const handleLogin = async () => {
+    setError("");
+    setLoading(true);
+    try {
+      await login(email, password);
+      navigation.navigate('MainScreen');
+    } catch (error) {
+      // Switch case to display most common error codes
+      switch(error.code) {
+        case 'auth/invalid-credential':
+          setError('Invalid email or password');
+          break;
+        case 'auth/too-many-requests':
+          setError('Too many failed login attempts. Please try again later');
+          break;
+        default:
+          setError('Login failed. Please try again.');
+          console.log("Firebase auth error:", error.code, error.message);
+          break;
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleGoogleLogin = () => {
