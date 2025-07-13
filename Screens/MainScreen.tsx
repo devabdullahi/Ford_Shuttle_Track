@@ -12,6 +12,7 @@ import {
 
 //Work on the shuttle progress bar
 
+//put event trigger to update location of the shuttle
 
 const stops = [
   { id: 1, name: 'Manufacturing Plant', status: 'Completed', timeLabel: 'Departed 12:15 PM', iconType: 'check' },
