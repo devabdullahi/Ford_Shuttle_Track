@@ -5,6 +5,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import RootNavigator from './Navigation/RootNavigator';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import MainScreen from  './Screens/MainScreen'
+import DBTestScreen from './Screens/DBTest'
 const Stack = createNativeStackNavigator();
 
 export default function App() {
