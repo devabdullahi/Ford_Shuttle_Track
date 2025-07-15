@@ -6,6 +6,7 @@ import RootNavigator from './Navigation/RootNavigator';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import MainScreen from  './Screens/MainScreen'
 const Stack = createNativeStackNavigator();
+import ApprovedStopsScreen from './Screens/ApprovedStopsScreen';
 
 export default function App() {
   return (
@@ -16,7 +17,7 @@ export default function App() {
           Add other screens here
       </Stack.Navigator> */}
 
-      <MainScreen/>
+      <ApprovedStopsScreen/>
     </NavigationContainer> 
   );
 }  
