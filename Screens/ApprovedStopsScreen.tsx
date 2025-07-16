@@ -13,24 +13,17 @@ const ApprovedStopsScreen = ({navigation, route}) => {
       const mockData = [
         {
           id: '1',
-          name: 'Rotunda Center',
-          address: '123 Main St, City Center',
+          name: 'Wagner Place',
+          address: '22001 Michigan Ave, Dearborn',
           status: 'approved',
-          coordinates: { lat: 40.7128, lng: -74.0060 },
+          coordinates: { lat: 42.322, lng: -83.176 },
         },
         {
           id: '2',
-          name: 'WHQ Campus',
-          address: '456 College Ave, University District',
+          name: 'World Headquarters',
+          address: '1 American Rd, Dearborn',
           status: 'approved',
-          coordinates: { lat: 40.8075, lng: -73.9626 },
-        },
-        {
-          id: '3',
-          name: 'Union at Dearborn',
-          address: '789 Commerce St, Business District',
-          status: 'approved',
-          coordinates: { lat: 40.7145, lng: -74.0082 },
+          coordinates: { lat: 42.315, lng: -82.210 },
         },
         {
           id: '4',

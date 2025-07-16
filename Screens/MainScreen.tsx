@@ -85,6 +85,8 @@ const MainScreen = ({ navigation }) => {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Shuttle Progress</Text>
           <View style={styles.timeline}>
+            {/* for this section, we only need to display two locations, the current location (pulled from db), and the next location (also pulled from db)
+             I can handle the db connection, but if you can switch it to only the two that would be great*/}
             {stops.map((stop, idx) => (
               <View key={stop.id} style={styles.timelineItem}>
                 <View style={styles.timelineLeft}>
