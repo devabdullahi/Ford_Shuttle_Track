@@ -1,23 +1,28 @@
 import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
+// Screens
 import SignUpScreen from './Screens/SignUp';
 import LogInScreen from './Screens/LogIn';
-import { NavigationContainer } from '@react-navigation/native';
-import RootNavigator from './Navigation/RootNavigator';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import MainScreen from  './Screens/MainScreen'
-const Stack = createNativeStackNavigator();
+import MainScreen from './Screens/MainScreen';
 import ApprovedStopsScreen from './Screens/ApprovedStopsScreen';
+import StopDetailsScreen from './Screens/StopDetailScreen';
+import RequestStopScreen from './Screens/RequestStopsScreen';
+const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
     <NavigationContainer>
-      {/* <Stack.Navigator initialRouteName="SignUpScreen" screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="SignUpScreen" component={SignUpScreen} />
-          <Stack.Screen name="LogInScreen" component={LogInScreen} />
-          Add other screens here
-      </Stack.Navigator> */}
-
-      <ApprovedStopsScreen/>
-    </NavigationContainer> 
+      <Stack.Navigator initialRouteName="SignUpScreen" screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="SignUpScreen" component={SignUpScreen} />
+        <Stack.Screen name="LogInScreen" component={LogInScreen} />
+        <Stack.Screen name="MainScreen" component={MainScreen} />
+        <Stack.Screen name="ApprovedStops" component={ApprovedStopsScreen} />
+        <Stack.Screen name="StopDetails" component={StopDetailsScreen} screenOptions={{ headerShown: false }} />
+        <Stack.Screen name="RequestStops" component={RequestStopScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
-}  
+
+}

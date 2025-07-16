@@ -7,23 +7,75 @@ import {
   TouchableOpacity,
   Image,
   ImageBackground,
+  ActivityIndicator,
+  Alert,
 } from 'react-native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useNavigation } from '@react-navigation/native';
 
+type RootStackParamList = {
+  SignUpScreen: undefined;
+  LogInScreen: undefined;
+  MainScreen: undefined;
+  ApprovedStops: undefined;
+  RequestStop: undefined;
+  StopDetails: { stop: any };
+};
 
+type LoginScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'LogInScreen'>;
 
-const LogInScreen = ({navigation}) => {
+const LogInScreen = () => {
+  const navigation = useNavigation<LoginScreenNavigationProp>();
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const handleLogin = () => {
-    console.log('Logging in with:', { email, password });
-    // Add your login logic here
+  const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert('Error', 'Please enter both email and password');
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // On successful login, navigate to MainScreen
+      navigation.replace('MainScreen');
+    } catch (error) {
+      Alert.alert('Login Failed', 'Invalid email or password');
+      console.error('Login error:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleGoogleLogin = () => {
-    console.log('Logging in with Google');
-    // Add your Google login logic here
+  const handleGoogleLogin = async () => {
+    setIsLoading(true);
+
+    try {
+      // Simulate Google login
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // On successful login, navigate to MainScreen
+      navigation.replace('MainScreen');
+    } catch (error) {
+      Alert.alert('Google Login Failed', 'Please try again');
+      console.error('Google login error:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
 
   return (
     <ImageBackground
@@ -44,9 +96,11 @@ const LogInScreen = ({navigation}) => {
             placeholder="Enter your email"
             placeholderTextColor="#888"
             value={email}
-            onChangeText={text => setEmail(text)}
+            onChangeText={setEmail}
             keyboardType="email-address"
             autoCapitalize="none"
+            autoCorrect={false}
+            editable={!isLoading}
           />
         </View>
 
@@ -58,42 +112,53 @@ const LogInScreen = ({navigation}) => {
             placeholder="Enter your password"
             placeholderTextColor="#888"
             value={password}
-            onChangeText={text => setPassword(text)}
+            onChangeText={setPassword}
             secureTextEntry={true}
+            autoCapitalize="none"
+            editable={!isLoading}
           />
         </View>
 
         {/* Login Button */}
         <TouchableOpacity
-          style={styles.LoginButton}
+          style={[styles.LoginButton, isLoading && styles.disabledButton]}
           onPress={handleLogin}
+          disabled={isLoading}
           accessibilityHint="Tap to log in"
         >
-          <Text style={styles.LoginButtonText}>LOG IN</Text>
+          <Text style={styles.LoginButtonText}>
+            {isLoading ? 'LOGGING IN...' : 'LOG IN'}
+          </Text>
         </TouchableOpacity>
 
         {/* Login with Google */}
         <TouchableOpacity
-          style={styles.LoginGoogleButton}
+          style={[styles.LoginGoogleButton, isLoading && styles.disabledButton]}
           onPress={handleGoogleLogin}
+          disabled={isLoading}
         >
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+          <View style={styles.googleButtonContent}>
             <Image
               source={require('../assets/google_g_icon.png')}
-              style={{ width: 24, height: 24, marginRight: 10 }}
+              style={styles.googleIcon}
               resizeMode="contain"
             />
-            <Text style={styles.LoginGoogleButtonText}>LOG IN WITH GOOGLE</Text>
+            <Text style={styles.LoginGoogleButtonText}>
+              {isLoading ? 'PROCESSING...' : 'LOG IN WITH GOOGLE'}
+            </Text>
           </View>
         </TouchableOpacity>
 
-
         <View style={styles.DontHaveAccountContainer}>
-            <Text style={styles.DontHaveAccountText}>Don't have an account? {' '}
-                <Text style={styles.DontHaveAccountLink} onPress={() => navigation.navigate('SignUpScreen')}>
-                    Sign Up
-                </Text>
+          <Text style={styles.DontHaveAccountText}>
+            Don't have an account?{' '}
+            <Text 
+              style={styles.DontHaveAccountLink} 
+              onPress={() => !isLoading && navigation.navigate('SignUpScreen')}
+            >
+              Sign Up
             </Text>
+          </Text>
         </View>
       </View>
     </ImageBackground>
@@ -101,6 +166,12 @@ const LogInScreen = ({navigation}) => {
 };
 
 const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f5f5f5',
+  },
   LoginBackground: {
     flex: 1,
     width: '100%',
@@ -115,7 +186,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 50,
     paddingHorizontal: 20,
-    
   },
   LogInText: {
     fontSize: 42,
@@ -161,6 +231,9 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     marginBottom: 20,
   },
+  disabledButton: {
+    opacity: 0.6,
+  },
   LoginButtonText: {
     fontWeight: '600',
     fontSize: 18,
@@ -181,26 +254,33 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
   },
+  googleButtonContent: {
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    justifyContent: 'center'
+  },
+  googleIcon: {
+    width: 24, 
+    height: 24, 
+    marginRight: 10
+  },
   LoginGoogleButtonText: {
     fontWeight: '600',
     fontSize: 18,
     color: 'black',
   },
-  
-
   DontHaveAccountContainer: {
-  marginTop: 20,
-  alignItems: 'center',
-},
-DontHaveAccountText: {
-  color: 'white',
-  fontSize: 14,
-},
-DontHaveAccountLink: {
-  color: '#FFD700',
-  fontWeight: '600',
-},
-
+    marginTop: 20,
+    alignItems: 'center',
+  },
+  DontHaveAccountText: {
+    color: 'white',
+    fontSize: 14,
+  },
+  DontHaveAccountLink: {
+    color: '#FFD700',
+    fontWeight: '600',
+  },
 });
 
 export default LogInScreen;

@@ -15,17 +15,23 @@ import {
 //put event trigger to update location of the shuttle
 
 const stops = [
-  { id: 1, name: 'Manufacturing Plant', status: 'Completed', timeLabel: 'Departed 12:15 PM', iconType: 'check' },
-  { id: 2, name: 'Research Center', status: 'Current', timeLabel: 'Currently at station', iconType: 'bus' },
-  { id: 3, name: 'Dearborn Plant - Gate 3', status: 'Next', timeLabel: 'ETA: 12:27 PM', iconType: 'clock' },
-  { id: 4, name: 'Downtown Transit Hub', status: 'Upcoming', timeLabel: 'ETA: 12:35 PM', iconType: 'circle' },
-];
+  { id: 1, name: 'Allen Park Test Lab', status: 'Completed', timeLabel: 'Departed 11:45 AM', iconType: 'check' },
+  { id: 2, name: 'Dearborn Truck Plant', status: 'Current', timeLabel: 'Currently at station', iconType: 'bus' },
+  { id: 3, name: 'Ford Experience Center', status: 'Next', timeLabel: 'ETA: 12:05 PM', iconType: 'clock' },
+  { id: 4, name: 'Product Development Center (Atrium Lobby)', status: 'Upcoming', timeLabel: 'ETA: 12:15 PM', iconType: 'circle' },
+  { id: 5, name: 'Central Lab', status: 'Upcoming', timeLabel: 'ETA: 12:25 PM', iconType: 'circle' },
+  { id: 6, name: 'Research & Innovation Center', status: 'Upcoming', timeLabel: 'ETA: 12:35 PM', iconType: 'circle' },
 
+];
 
 const handleCall = () => {
   const phoneNumber = 'tel:3132693165'; 
   Linking.openURL(phoneNumber);
 };
+
+const handleSchedule = (navigation) => {
+  navigation.navigate('ApprovedStops');
+}
 
 const statusColors = {
   Completed: '#bbb',
@@ -56,14 +62,17 @@ const NavigationBar = () => {
   );
 };
 
-const MainScreen = () => {
+const MainScreen = ({ navigation }) => {
   const onQuickActionPress = (action) => {
     console.log('Quick action pressed:', action.label);
 
-    if (action.label == 'Book Ride') {
+    if (action.label === 'Book Ride') {
       handleCall();
-  };
-}
+    }
+    if (action.label === 'Schedule') {
+      handleSchedule(navigation);
+    }
+  }
 
   return (
     <>
@@ -138,7 +147,6 @@ const MainScreen = () => {
         </View>
       </ScrollView>
 
-      <NavigationBar />
     </>
   );
 };

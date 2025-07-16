@@ -231,7 +231,7 @@ AlreadyHaveAnAccountText: {
   fontSize: 14,
 },
 AlreadyHaveAnAccountLink: {
-  color: 'blue',
+  color: '#17c1e8',
   fontWeight: '600',
 },
 
