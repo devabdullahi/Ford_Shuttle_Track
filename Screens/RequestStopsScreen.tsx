@@ -53,12 +53,17 @@ const RequestStopScreen = ({ navigation }) => {
     );
   };
 
+
+  
+  // Handle submission of selected stops
+
   const submitRequests = () => {
     console.log('Submitting requests for:', selectedStops);
     alert(`${selectedStops.length} stop(s) requested for approval`);
     navigation.navigate('ApprovedStops', { requestedStops: selectedStops });
   };
 
+  // Render function for each stop item
   const renderStopItem = ({ item }) => (
     <TouchableOpacity onPress={() => toggleStopSelection(item)}>
       <Card style={[

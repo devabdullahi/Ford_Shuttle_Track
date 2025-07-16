@@ -24,7 +24,7 @@ const StopDetailsScreen = ({ route, navigation }) => {
             <Text style={styles.detailLabel}>Status:</Text>
             <Text style={[
               styles.detailValue,
-              stop.status === 'approved' ? styles.approved : styles.pending
+              stop.status === 'approved' ? styles.approved : styles.rejected
             ]}>
               {stop.status}
             </Text>
@@ -85,8 +85,8 @@ const styles = StyleSheet.create({
   approved: {
     color: '#27ae60',
   },
-  pending: {
-    color: '#f39c12',
+  rejected: {
+    color: '#b10303ff',
   },
 });
 

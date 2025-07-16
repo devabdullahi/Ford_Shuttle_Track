@@ -36,7 +36,7 @@ const ApprovedStopsScreen = ({navigation, route}) => {
           id: '4',
           name: 'Union at MidTown',
           address: '101 River Rd, Scenic Area',
-          status: 'pending',
+          status: 'rejected',
           coordinates: { lat: 40.7831, lng: -73.9712 },
         },
       ];
@@ -80,8 +80,8 @@ const ApprovedStopsScreen = ({navigation, route}) => {
     switch (status) {
       case 'approved':
         return '#27ae60';
-      case 'pending':
-        return '#f39c12';
+      case 'rejected':
+        return '#ac0606ff';
       case 'requested':
         return '#3498db';
       default:
@@ -93,8 +93,8 @@ const ApprovedStopsScreen = ({navigation, route}) => {
     switch (status) {
       case 'approved':
         return 'Approved';
-      case 'pending':
-        return 'Pending';
+      case 'rejected':
+        return 'Rejected';
       case 'requested':
         return 'Requested';
       default:
@@ -175,8 +175,8 @@ const ApprovedStopsScreen = ({navigation, route}) => {
           <Text style={styles.legendText}>Approved</Text>
         </View>
         <View style={styles.legendItem}>
-          <View style={[styles.legendIndicator, { backgroundColor: '#f39c12' }]} />
-          <Text style={styles.legendText}>Pending</Text>
+          <View style={[styles.legendIndicator, { backgroundColor: '#b10303ff' }]} />
+          <Text style={styles.legendText}>Rejected</Text>
         </View>
         <View style={styles.legendItem}>
           <View style={[styles.legendIndicator, { backgroundColor: '#3498db' }]} />
