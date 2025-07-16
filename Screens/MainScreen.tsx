@@ -18,7 +18,6 @@ const stops = [
   { id: 1, name: 'Allen Park Test Lab', status: 'Completed', timeLabel: 'Departed 11:45 AM', iconType: 'check' },
   { id: 2, name: 'Dearborn Truck Plant', status: 'Current', timeLabel: 'Currently at station', iconType: 'bus' },
   { id: 3, name: 'Ford Experience Center', status: 'Next', timeLabel: 'ETA: 12:05 PM', iconType: 'clock' },
-  { id: 4, name: 'Product Development Center (Atrium Lobby)', status: 'Upcoming', timeLabel: 'ETA: 12:15 PM', iconType: 'circle' },
   { id: 5, name: 'Central Lab', status: 'Upcoming', timeLabel: 'ETA: 12:25 PM', iconType: 'circle' },
   { id: 6, name: 'Research & Innovation Center', status: 'Upcoming', timeLabel: 'ETA: 12:35 PM', iconType: 'circle' },
 
@@ -80,7 +79,7 @@ const MainScreen = ({ navigation }) => {
         <View style={styles.banner}>
           <Text style={styles.bannerSmall}>Next Shuttle Arrival</Text>
           <Text style={styles.bannerLarge}>8 min</Text>
-          <Text style={styles.bannerRoute}>Route 15 - Downtown</Text>
+
         </View>
 
         <View style={styles.section}>
