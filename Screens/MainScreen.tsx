@@ -8,6 +8,10 @@ import {
   TouchableOpacity,
   Linking
 } from 'react-native';
+import { collection, doc, setDoc, getDoc, getFirestore, query, where, getDocs } from "firebase/firestore";
+import {app} from "../firebase_config"
+
+const db = getFirestore(app);
 
 // Opens the phone dialer with the driver number
 const handleCall = () => {
@@ -36,32 +40,6 @@ const quickActions = [
   { id: 4, label: 'Help', icon: '❓' },
 ];
 
-// Function to get available stops data (same as RequestStopScreen)
-const getAvailableStops = () => {
-  return [
-    { id: '1', name: 'Advanced Engineering Center', address: '2400 Village Rd, Dearborn, MI 48124', coordinates: { lat: 42.3035, lng: -83.2352 } },
-    { id: '2', name: 'Allen Park Test Lab', address: '1500 Enterprise Dr, Allen Park, MI 48101', coordinates: { lat: 42.2463, lng: -83.2128 } },
-    { id: '3', name: 'Building #2 (Atrium)', address: '20000 Rotunda Dr, Dearborn, MI 48124', coordinates: { lat: 42.2969, lng: -83.2431 } },
-    { id: '4', name: 'Building #4', address: '20200 Rotunda Dr, Dearborn, MI 48121', coordinates: { lat: 42.2977, lng: -83.2455 } },
-    { id: '5', name: 'Building #5', address: '20300 Rotunda Dr, Dearborn, MI 48124', coordinates: { lat: 42.2983, lng: -83.2470 } },
-    { id: '6', name: 'Central Campus Building (HUB)', address: '2100 Carroll Shelby Way, Dearborn, MI 48124', coordinates: { lat: 42.3050, lng: -83.2335 } },
-    { id: '7', name: 'Central Lab', address: '15000 Century Dr, Dearborn, MI 48120', coordinates: { lat: 42.2810, lng: -83.1984 } },
-    { id: '8', name: 'Commerce Dr North (Cyber & ADAS)', address: '15090 Commerce Dr. North, Dearborn, MI 48120', coordinates: { lat: 42.2842, lng: -83.2005 } },
-    { id: '9', name: 'Crash Barrier Building', address: '20000 Oakwood Blvd, Dearborn, MI 48124', coordinates: { lat: 42.2911, lng: -83.2402 } },
-    { id: '10', name: 'Dearborn Engine Plant', address: '3001 Miller Rd, Dearborn, MI 48120', coordinates: { lat: 42.2930, lng: -83.1767 } },
-    { id: '11', name: 'Dearborn Inn', address: '20301 Oakwood Blvd, Dearborn, MI 48124', coordinates: { lat: 42.2918, lng: -83.2423 } },
-    { id: '12', name: 'Dearborn Truck Plant', address: '3001 Miller Rd, Dearborn, MI 48120', coordinates: { lat: 42.2930, lng: -83.1769 } },
-    { id: '13', name: 'Diagnostic Service Center', address: '1700 Fairlane Dr, Allen Park, MI 48101', coordinates: { lat: 42.2527, lng: -83.2123 } },
-    { id: '14', name: 'Driving Dynamics Lab - East', address: '20500 Oakwood Blvd, Dearborn, MI 48121', coordinates: { lat: 42.2944, lng: -83.2451 } },
-    { id: '15', name: 'Driving Dynamics Lab - West', address: '20600 Oakwood Blvd, Dearborn, MI 48121', coordinates: { lat: 42.2950, lng: -83.2460 } },
-    { id: '16', name: 'Dynamometer Lab', address: '2473 Village Rd, Dearborn, MI 48124', coordinates: { lat: 42.3025, lng: -83.2344 } },
-    { id: '17', name: 'Engine Mfg. Development Ops', address: '17000 Southfield Rd, Allen Park, MI 48101', coordinates: { lat: 42.2500, lng: -83.2100 } },
-    { id: '18', name: 'Experimental Vehicle Building', address: '20800 Oakwood Blvd, Dearborn, MI 48124', coordinates: { lat: 42.2965, lng: -83.2482 } },
-    { id: '19', name: 'Fairlane Business Park 3', address: '1555 Fairlane Dr, Allen Park, MI 48101', coordinates: { lat: 42.2505, lng: -83.2150 } },
-    { id: '20', name: 'Fairlane Business Park 5', address: '17333 Federal Dr, Allen Park, MI 48101', coordinates: { lat: 42.2512, lng: -83.2165 } },
-  ];
-};
-
 // Main screen component
 const MainScreen = ({ navigation }) => {
   // State to store shuttle stop data
@@ -69,36 +47,45 @@ const MainScreen = ({ navigation }) => {
 
   // Load stop data when the screen mounts
   useEffect(() => {
-    const availableStops = getAvailableStops();
-    
-    // and next location as "Central Lab" - you can modify this logic based on your DB data
-    const currentStopData = availableStops.find(stop => stop.name === 'Dearborn Truck Plant');
-    const nextStopData = availableStops.find(stop => stop.name === 'Central Lab');
-    
-    const timelineData = [
-      {
-        id: currentStopData.id,
-        name: currentStopData.name,
-        status: 'Current',
-        timeLabel: 'Currently at station',
-        iconType: 'bus'
-      },
-      {
-        id: nextStopData.id,
-        name: nextStopData.name,
-        status: 'Next',
-        timeLabel: 'ETA: 12:05 PM',
-        iconType: 'clock'
-      }
-    ];
 
-    // Log each stop name to console
-    timelineData.forEach(stop => {
-      console.log(`Loaded stop: ${stop.name}`);
-    });
+    async function setStopData(){
+      const currentStopRef = doc(db, "bus_locations", "7KE1TzMHdqpLSEH9aQKo");
+      const currentStop = await getDoc(currentStopRef);
+      const currentStopData = {"id": currentStop.data().id, "building_name": currentStop.data().building_name}
 
-    // Set the timeline data to state
-    setStops(timelineData);
+      const stopsRef = collection(db, "upcoming_stops");
+      const nextStopQuery = query(stopsRef, where("stop_id", "==", 1));
+      const nextStopData = await getDocs(nextStopQuery)
+      const nextStop = nextStopData.docs[0];
+      console.log(nextStop.data()["building_name"]);
+    
+      const timelineData = [
+        {
+          id: currentStopData.id,
+          name: currentStopData.building_name,
+          status: 'Current',
+          timeLabel: 'Currently at station',
+          iconType: 'bus'
+        },
+        {
+          id: nextStop.data()["stop_id"],
+          name: nextStop.data()["building_name"],
+          status: 'Next',
+          timeLabel: 'ETA: 12:05 PM',
+          iconType: 'clock'
+        }
+      ];
+
+      // Log each stop name to console
+      timelineData.forEach(stop => {
+        console.log(`Loaded stop: ${stop.name}`);
+      });
+
+      // Set the timeline data to state
+      setStops(timelineData);
+    }
+
+    setStopData();
   }, []);
 
   // Handles press on quick action buttons

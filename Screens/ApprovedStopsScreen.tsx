@@ -2,6 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { Card, Button } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { collection, doc, setDoc, getDoc, getFirestore, query, where, getDocs, addDoc, updateDoc, orderBy } from "firebase/firestore";
+import {app} from "../firebase_config"
+
+const db = getFirestore(app);
 
 const ApprovedStopsScreen = ({navigation, route}) => {
   const [allStops, setAllStops] = useState([]);
@@ -10,29 +14,20 @@ const ApprovedStopsScreen = ({navigation, route}) => {
   
   const fetchAllStops = async () => {
     try {
-      const mockData = [
-        {
-          id: '1',
-          name: 'Wagner Place',
-          address: '22001 Michigan Ave, Dearborn',
-          status: 'approved',
-          coordinates: { lat: 42.322, lng: -83.176 },
-        },
-        {
-          id: '2',
-          name: 'World Headquarters',
-          address: '1 American Rd, Dearborn',
-          status: 'approved',
-          coordinates: { lat: 42.315, lng: -82.210 },
-        },
-        {
-          id: '4',
-          name: 'Union at MidTown',
-          address: '101 River Rd, Scenic Area',
-          status: 'rejected',
-          coordinates: { lat: 40.7831, lng: -73.9712 },
-        },
-      ];
+      const stopsRef = collection(db, "upcoming_stops");
+      const nextStopQuery = query(stopsRef, orderBy("stop_id"));
+      const nextStopData = await getDocs(nextStopQuery)
+
+      const mockData = [];
+      nextStopData.forEach((stop) => {
+        mockData.push({
+          id: stop.data()["stop_id"],
+          name: stop.data()["building_name"],
+          address: stop.data()["address"],
+          status: "approved",
+          coordinates: {lat: stop.data()["lat"], lng: stop.data()["long"]}
+        });
+      })
 
       setAllStops(mockData);
       setError(null);
@@ -49,19 +44,40 @@ const ApprovedStopsScreen = ({navigation, route}) => {
 
   // Handle newly requested stops from RequestStopScreen
   useEffect(() => {
-    if (route.params?.requestedStops) {
-      const requestedStops = route.params.requestedStops.map(stop => ({
-        ...stop,
-        status: 'requested'
-      }));
-      
-      setAllStops(prevStops => {
-        // Remove duplicates and add new requested stops
-        const existingIds = prevStops.map(stop => stop.id);
-        const newStops = requestedStops.filter(stop => !existingIds.includes(stop.id));
-        return [...prevStops, ...newStops];
+    async function addStop(stop){
+
+      const idRef = doc(db, "id_priorities", "qpndyXt805nzCv7pSL9R");
+      const currentIdData = await getDoc(idRef);
+      const newId = currentIdData.data().currentId;
+      const stopsRef = collection(db, "upcoming_stops");
+
+
+      const newStop = await addDoc(stopsRef, {
+        address: stop.address,
+        building_name: stop.name,
+        lat: stop.coordinates.lat,
+        long: stop.coordinates.lng,
+        stop_id: newId
+      })
+
+      console.log(newStop)
+
+      await updateDoc(idRef, {
+            currentId: newId + 1
       });
-    }
+    }      
+
+      if (route.params?.requestedStops) {
+        const requestedStops = route.params.requestedStops.map(stop => ({
+          ...stop,
+          status: 'requested',
+        }));
+        route.params.requestedStops.forEach((stop) => {
+          addStop(stop);
+        })
+
+        handleRefresh();
+      }
   }, [route.params?.requestedStops]);
 
   const handleRefresh = () => {
