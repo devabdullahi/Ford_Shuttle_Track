@@ -9,11 +9,13 @@ import MainScreen from './Screens/MainScreen';
 import ApprovedStopsScreen from './Screens/ApprovedStopsScreen';
 import StopDetailsScreen from './Screens/StopDetailScreen';
 import RequestStopScreen from './Screens/RequestStopsScreen';
+import MapScreen from './Screens/MapScreen';
 const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
     <NavigationContainer>
+      {/*
       <Stack.Navigator initialRouteName="SignUpScreen" screenOptions={{ headerShown: false }}>
         <Stack.Screen name="SignUpScreen" component={SignUpScreen} />
         <Stack.Screen name="LogInScreen" component={LogInScreen} />
@@ -21,7 +23,10 @@ export default function App() {
         <Stack.Screen name="ApprovedStops" component={ApprovedStopsScreen} />
         <Stack.Screen name="StopDetails" component={StopDetailsScreen} screenOptions={{ headerShown: false }} />
         <Stack.Screen name="RequestStops" component={RequestStopScreen} />
+        <Stack.Screen name="MapScreen" component={MapScreen} />
       </Stack.Navigator>
+      */}
+      <MapScreen />
     </NavigationContainer>
   );
 
