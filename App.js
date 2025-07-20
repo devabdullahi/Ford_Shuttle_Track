@@ -9,6 +9,7 @@ import MainScreen from './Screens/MainScreen';
 import ApprovedStopsScreen from './Screens/ApprovedStopsScreen';
 import StopDetailsScreen from './Screens/StopDetailScreen';
 import RequestStopScreen from './Screens/RequestStopsScreen';
+import FAQScreen from './Screens/FAQ';
 const Stack = createNativeStackNavigator();
 
 export default function App() {
@@ -21,6 +22,7 @@ export default function App() {
         <Stack.Screen name="ApprovedStops" component={ApprovedStopsScreen} />
         <Stack.Screen name="StopDetails" component={StopDetailsScreen} screenOptions={{ headerShown: false }} />
         <Stack.Screen name="RequestStops" component={RequestStopScreen} />
+        <Stack.Screen name="FAQ" component={FAQScreen}/>
       </Stack.Navigator>
     </NavigationContainer>
   );
