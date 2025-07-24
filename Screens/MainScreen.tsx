@@ -24,6 +24,10 @@ const handleSchedule = (navigation) => {
   navigation.navigate('ApprovedStops');
 };
 
+// handle map navigation
+const handleMap = (navigation) => {
+  navigation.navigate('MapScreen');
+};
 // Defines color for each stop status type
 const statusColors = {
   Completed: '#bbb',
@@ -98,9 +102,16 @@ const MainScreen = ({ navigation }) => {
     if (action.label === 'Schedule') {
       handleSchedule(navigation); // Go to schedule screen
     }
+    if (action.label === 'Map') {
+      // Navigate to map screen (not implemented)
+      handleMap(navigation); // Go to map screen
+    }
   };
-
+  
   // UI rendering
+  // Debug logs for duplicate key errors
+  console.log('stops ids:', stops.map(s => s.id));
+  console.log('quickActions ids:', quickActions.map(a => a.id));
   return (
     <>
       <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 140 }}>
@@ -116,7 +127,7 @@ const MainScreen = ({ navigation }) => {
           <View style={styles.timeline}>
             {/* Now only displaying current and next location from available stops data */}
             {stops.map((stop, idx) => (
-              <View key={stop.id} style={styles.timelineItem}>
+              <View key={`${stop.id}-${idx}`} style={styles.timelineItem}>
                 <View style={styles.timelineLeft}>
                   {idx !== stops.length - 1 && <View style={styles.line} />}
                   <View style={[styles.iconCircle, { backgroundColor: statusColors[stop.status] || '#ccc' }]}>
@@ -190,8 +201,8 @@ const MainScreen = ({ navigation }) => {
         <View style={styles.quickActionsWrapper}>
           <Text style={styles.quickActionsTitle}>Quick Actions</Text>
           <View style={styles.quickActionsGrid}>
-            {quickActions.map((action) => (
-              <View key={action.id} style={styles.quickActionItem}>
+            {quickActions.map((action, idx) => (
+              <View key={`${action.id}-${idx}`} style={styles.quickActionItem}>
                 <TouchableOpacity
                   style={styles.quickActionButton}
                   activeOpacity={0.7}

@@ -1,6 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+  ActivityIndicator,
+  SafeAreaView,
+  Platform,
+  StatusBar,
+} from 'react-native';
 import { Card, Button } from 'react-native-paper';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const RequestStopScreen = ({ navigation }) => {
   const [availableStops, setAvailableStops] = useState([]);
@@ -33,7 +44,6 @@ const RequestStopScreen = ({ navigation }) => {
           { id: '19', name: 'Fairlane Business Park 3', address: '1555 Fairlane Dr, Allen Park, MI 48101', coordinates: { lat: 42.2505, lng: -83.2150 } },
           { id: '20', name: 'Fairlane Business Park 5', address: '17333 Federal Dr, Allen Park, MI 48101', coordinates: { lat: 42.2512, lng: -83.2165 } },
         ];
-        
         setAvailableStops(mockData);
         setLoading(false);
       } catch (err) {
@@ -46,42 +56,41 @@ const RequestStopScreen = ({ navigation }) => {
   }, []);
 
   const toggleStopSelection = (stop) => {
-    setSelectedStops(prev =>
-      prev.some(s => s.id === stop.id)
-        ? prev.filter(s => s.id !== stop.id)
+    setSelectedStops((prev) =>
+      prev.some((s) => s.id === stop.id)
+        ? prev.filter((s) => s.id !== stop.id)
         : [...prev, stop]
     );
   };
 
-
-  
-  // Handle submission of selected stops
-
   const submitRequests = () => {
-    console.log('Submitting requests for:', selectedStops);
     alert(`${selectedStops.length} stop(s) requested for approval`);
     navigation.navigate('ApprovedStops', { requestedStops: selectedStops });
   };
 
-  // Render function for each stop item
-  const renderStopItem = ({ item }) => (
-    <TouchableOpacity onPress={() => toggleStopSelection(item)}>
-      <Card style={[
-        styles.card,
-        selectedStops.some(s => s.id === item.id) && styles.selectedCard
-      ]}>
-        <Card.Content>
-          <Text style={styles.stopName}>{item.name}</Text>
-          <Text style={styles.stopAddress}>{item.address}</Text>
-        </Card.Content>
-      </Card>
-    </TouchableOpacity>
-  );
+  const renderStopItem = ({ item }) => {
+    const isSelected = selectedStops.some((s) => s.id === item.id);
+    return (
+      <TouchableOpacity onPress={() => toggleStopSelection(item)}>
+        <Card
+          style={[
+            styles.card,
+            isSelected && styles.selectedCard,
+          ]}
+        >
+          <Card.Content>
+            <Text style={styles.stopName}>{item.name}</Text>
+            <Text style={styles.stopAddress}>{item.address}</Text>
+          </Card.Content>
+        </Card>
+      </TouchableOpacity>
+    );
+  };
 
   if (loading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator size="large" color="#3498db" />
       </View>
     );
   }
@@ -94,38 +103,59 @@ const RequestStopScreen = ({ navigation }) => {
     );
   }
 
+  // Debug log for duplicate key errors
+  console.log('availableStops ids:', availableStops.map(s => s.id));
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Request New Bus Stops</Text>
-      <Text style={styles.subtitle}>Select stops to request for approval</Text>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+        >
+          <Icon name="arrow-back" size={24} color="#333" />
+        </TouchableOpacity>
+        <Text style={styles.title}>Request New Bus Stops</Text>
+        <Text style={styles.subtitle}>Tap to select stops for approval</Text>
+      </View>
 
       <FlatList
         data={availableStops}
         renderItem={renderStopItem}
-        keyExtractor={item => item.id}
+        keyExtractor={(item, idx) => `${item.id}-${idx}`}
         contentContainerStyle={styles.listContent}
         ListEmptyComponent={
           <Text style={styles.emptyText}>No available stops found</Text>
         }
       />
 
-      <Button 
-        mode="contained" 
+      <Button
+        mode="contained"
         onPress={submitRequests}
         disabled={selectedStops.length === 0}
-        style={styles.submitButton}
+        style={[
+          styles.submitButton,
+          selectedStops.length === 0 && styles.disabledButton,
+        ]}
+        labelStyle={styles.submitButtonText}
       >
-        Request {selectedStops.length} Stop(s)
+        Request {selectedStops.length || ''} Stop{selectedStops.length === 1 ? '' : 's'}
       </Button>
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
-    backgroundColor: '#f5f5f5',
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight + 10 : 10,
+    backgroundColor: '#f9f9f9',
+  },
+  header: {
+    paddingHorizontal: 16,
+    marginBottom: 10,
+  },
+  backButton: {
+    marginBottom: 10,
   },
   center: {
     flex: 1,
@@ -133,31 +163,32 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: 'bold',
-    marginBottom: 8,
-    color: '#333',
+    color: '#2c3e50',
+    marginBottom: 4,
     textAlign: 'center',
   },
   subtitle: {
-    fontSize: 16,
-    marginBottom: 20,
+    fontSize: 15,
     color: '#666',
     textAlign: 'center',
+    marginBottom: 10,
   },
   card: {
+    marginHorizontal: 16,
     marginBottom: 12,
-    borderRadius: 8,
-    elevation: 2,
+    borderRadius: 10,
     backgroundColor: '#fff',
+    elevation: 3,
   },
   selectedCard: {
-    borderWidth: 2,
     borderColor: '#3498db',
-    backgroundColor: '#ebf5fb',
+    borderWidth: 2,
+    backgroundColor: '#eaf4fb',
   },
   stopName: {
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: '600',
     color: '#2c3e50',
   },
@@ -167,11 +198,11 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   listContent: {
-    paddingBottom: 80,
+    paddingBottom: 100,
   },
   emptyText: {
     textAlign: 'center',
-    marginTop: 20,
+    marginTop: 30,
     fontSize: 16,
     color: '#95a5a6',
   },
@@ -184,9 +215,16 @@ const styles = StyleSheet.create({
     bottom: 20,
     left: 20,
     right: 20,
-    paddingVertical: 10,
     borderRadius: 8,
     backgroundColor: '#3498db',
+    paddingVertical: 10,
+  },
+  disabledButton: {
+    backgroundColor: '#b0c4de',
+  },
+  submitButtonText: {
+    fontSize: 16,
+    color: '#fff',
   },
 });
 

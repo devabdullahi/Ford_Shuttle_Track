@@ -9,7 +9,7 @@ const StopDetailsScreen = ({ route, navigation }) => {
   return (
     <View style={styles.container}>
       <TouchableOpacity 
-        onPress={() => navigation.goBack()}
+        onPress={() => navigation.navigate('RequestStops')}
         style={styles.backButton}
       >
         <Icon name="arrow-back" size={24} color="#333" />

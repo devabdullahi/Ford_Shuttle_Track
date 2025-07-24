@@ -1,33 +1,55 @@
-import React, { useState, useEffect } from 'react'; 
-import { View, Text, StyleSheet, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  FlatList,
+  ActivityIndicator,
+  TouchableOpacity,
+  SafeAreaView,
+  StyleSheet,
+  Platform,
+  StatusBar,
+} from 'react-native';
 import { Card, Button } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { collection, doc, setDoc, getDoc, getFirestore, query, where, getDocs, addDoc, updateDoc, orderBy } from "firebase/firestore";
-import {app} from "../firebase_config"
+import {
+  collection,
+  doc,
+  setDoc,
+  getDoc,
+  getFirestore,
+  query,
+  orderBy,
+  getDocs,
+  addDoc,
+  updateDoc,
+} from "firebase/firestore";
+import { app } from "../firebase_config";
 
 const db = getFirestore(app);
 
-const ApprovedStopsScreen = ({navigation, route}) => {
+const ApprovedStopsScreen = ({ navigation, route }) => {
   const [allStops, setAllStops] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   const fetchAllStops = async () => {
     try {
       const stopsRef = collection(db, "upcoming_stops");
       const nextStopQuery = query(stopsRef, orderBy("stop_id"));
-      const nextStopData = await getDocs(nextStopQuery)
+      const nextStopData = await getDocs(nextStopQuery);
 
       const mockData = [];
-      nextStopData.forEach((stop) => {
+      nextStopData.forEach((doc) => {
+        const stop = doc.data();
         mockData.push({
-          id: stop.data()["stop_id"],
-          name: stop.data()["building_name"],
-          address: stop.data()["address"],
+          id: stop.stop_id,
+          name: stop.building_name,
+          address: stop.address,
           status: "approved",
-          coordinates: {lat: stop.data()["lat"], lng: stop.data()["long"]}
+          coordinates: { lat: stop.lat, lng: stop.long },
         });
-      })
+      });
 
       setAllStops(mockData);
       setError(null);
@@ -42,42 +64,36 @@ const ApprovedStopsScreen = ({navigation, route}) => {
     fetchAllStops();
   }, []);
 
-  // Handle newly requested stops from RequestStopScreen
   useEffect(() => {
-    async function addStop(stop){
-
+    async function addStop(stop) {
       const idRef = doc(db, "id_priorities", "qpndyXt805nzCv7pSL9R");
       const currentIdData = await getDoc(idRef);
-      const newId = currentIdData.data().currentId;
+      const newId = currentIdData?.data()?.currentId ?? 1;
+
       const stopsRef = collection(db, "upcoming_stops");
 
-
-      const newStop = await addDoc(stopsRef, {
+      await addDoc(stopsRef, {
         address: stop.address,
         building_name: stop.name,
         lat: stop.coordinates.lat,
         long: stop.coordinates.lng,
-        stop_id: newId
-      })
-
-      console.log(newStop)
+        stop_id: newId,
+        created_at: new Date(),
+      });
 
       await updateDoc(idRef, {
-            currentId: newId + 1
+        currentId: newId + 1,
       });
-    }      
+    }
 
-      if (route.params?.requestedStops) {
-        const requestedStops = route.params.requestedStops.map(stop => ({
-          ...stop,
-          status: 'requested',
-        }));
-        route.params.requestedStops.forEach((stop) => {
-          addStop(stop);
-        })
+    if (route.params?.requestedStops) {
+      const requestedStops = route.params.requestedStops.map(stop => ({
+        ...stop,
+        status: 'requested',
+      }));
 
-        handleRefresh();
-      }
+      Promise.all(requestedStops.map(addStop)).then(handleRefresh);
+    }
   }, [route.params?.requestedStops]);
 
   const handleRefresh = () => {
@@ -87,27 +103,19 @@ const ApprovedStopsScreen = ({navigation, route}) => {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'approved':
-        return '#27ae60';
-      case 'rejected':
-        return '#ac0606ff';
-      case 'requested':
-        return '#3498db';
-      default:
-        return '#95a5a6';
+      case 'approved': return '#27ae60';
+      case 'rejected': return '#ac0606ff';
+      case 'requested': return '#3498db';
+      default: return '#95a5a6';
     }
   };
 
   const getStatusText = (status) => {
     switch (status) {
-      case 'approved':
-        return 'Approved';
-      case 'rejected':
-        return 'Rejected';
-      case 'requested':
-        return 'Requested';
-      default:
-        return 'Unknown';
+      case 'approved': return 'Approved';
+      case 'rejected': return 'Rejected';
+      case 'requested': return 'Requested';
+      default: return 'Unknown';
     }
   };
 
@@ -124,9 +132,9 @@ const ApprovedStopsScreen = ({navigation, route}) => {
         <Text style={styles.stopAddress}>{item.address}</Text>
         <View style={styles.footerContainer}>
           <Text style={styles.coordinates}>
-            {item.coordinates.lat.toFixed(4)}, {item.coordinates.lng.toFixed(4)}
+            {(item.coordinates?.lat?.toFixed && item.coordinates.lat.toFixed(4)) || 'N/A'}, {(item.coordinates?.lng?.toFixed && item.coordinates.lng.toFixed(4)) || 'N/A'}
           </Text>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.detailsButton}
             onPress={() => navigation.navigate('StopDetails', { stop: item })}
           >
@@ -156,11 +164,13 @@ const ApprovedStopsScreen = ({navigation, route}) => {
     );
   }
 
+  // Debug log for duplicate key errors
+  console.log('allStops ids:', allStops.map(s => s.id));
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.headerContainer}>
         <View style={styles.titleContainer}>
-          <TouchableOpacity 
+          <TouchableOpacity
             onPress={() => navigation.navigate('MainScreen')}
             style={styles.backButton}
           >
@@ -168,8 +178,8 @@ const ApprovedStopsScreen = ({navigation, route}) => {
           </TouchableOpacity>
           <Text style={styles.title}>Bus Stops</Text>
         </View>
-        <Button 
-          mode="contained" 
+        <Button
+          mode="contained"
           onPress={() => navigation.navigate('RequestStops')}
           style={styles.requestButton}
           labelStyle={styles.requestButtonText}
@@ -196,12 +206,12 @@ const ApprovedStopsScreen = ({navigation, route}) => {
       <FlatList
         data={allStops}
         renderItem={renderStopItem}
-        keyExtractor={item => item.id}
+        keyExtractor={(item, idx) => `${item.id}-${idx}`}
         contentContainerStyle={styles.listContent}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
             <Text style={styles.emptyText}>No stops found</Text>
-            <Button 
+            <Button
               onPress={() => navigation.navigate('RequestStop')}
               style={styles.emptyButton}
             >
@@ -212,48 +222,56 @@ const ApprovedStopsScreen = ({navigation, route}) => {
         refreshing={loading}
         onRefresh={handleRefresh}
       />
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
-    backgroundColor: '#f5f5f5',
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0, // 🔼 Prevent clipping on Android
+    backgroundColor: '#fff',
   },
   center: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
+  errorText: {
+    color: '#e74c3c',
+    fontSize: 16,
+    marginBottom: 10,
+  },
+  retryButton: {
+    marginTop: 10,
+  },
   headerContainer: {
-    marginBottom: 16,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    padding: 16,
+    backgroundColor: '#f5f5f5',
   },
   titleContainer: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   backButton: {
-    padding: 4,
-    marginRight: 12,
+    marginRight: 10,
   },
   title: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: 'bold',
     color: '#333',
+  },
+  requestButton: {
+    marginTop: 10,
+    backgroundColor: '#2980b9',
+  },
+  requestButtonText: {
+    color: '#fff',
   },
   legendContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginBottom: 16,
-    backgroundColor: '#fff',
-    padding: 12,
-    borderRadius: 8,
-    elevation: 2,
+    marginVertical: 10,
   },
   legendItem: {
     flexDirection: 'row',
@@ -266,41 +284,41 @@ const styles = StyleSheet.create({
     marginRight: 6,
   },
   legendText: {
-    fontSize: 12,
+    fontSize: 14,
     color: '#333',
   },
+  listContent: {
+    paddingHorizontal: 16,
+    paddingBottom: 20,
+  },
   card: {
-    marginBottom: 16,
-    borderRadius: 8,
-    elevation: 3,
-    backgroundColor: '#fff',
+    marginVertical: 8,
+    padding: 10,
+    borderRadius: 10,
   },
   stopHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 8,
+    justifyContent: 'space-between',
   },
   statusIndicator: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    marginRight: 10,
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    marginRight: 8,
   },
   stopName: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#2c3e50',
     flex: 1,
   },
   statusText: {
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: '600',
-    textTransform: 'uppercase',
   },
   stopAddress: {
-    fontSize: 14,
-    color: '#7f8c8d',
-    marginBottom: 8,
+    color: '#555',
+    marginTop: 4,
+    marginBottom: 10,
   },
   footerContainer: {
     flexDirection: 'row',
@@ -309,49 +327,28 @@ const styles = StyleSheet.create({
   },
   coordinates: {
     fontSize: 12,
-    color: '#95a5a6',
-    fontFamily: 'monospace',
+    color: '#888',
   },
   detailsButton: {
+    backgroundColor: '#3498db',
     padding: 6,
-    borderRadius: 4,
-    backgroundColor: '#ebf5fb',
+    borderRadius: 6,
   },
   detailsButtonText: {
-    color: '#3498db',
+    color: '#fff',
     fontSize: 12,
-  },
-  listContent: {
-    paddingBottom: 16,
   },
   emptyContainer: {
     alignItems: 'center',
-    marginTop: 40,
+    marginTop: 50,
   },
   emptyText: {
-    textAlign: 'center',
     fontSize: 16,
-    color: '#95a5a6',
-    marginBottom: 16,
+    color: '#555',
+    marginBottom: 10,
   },
   emptyButton: {
-    width: '60%',
-  },
-  errorText: {
-    color: '#e74c3c',
-    fontSize: 16,
-    marginBottom: 16,
-  },
-  retryButton: {
-    width: '50%',
-  },
-  requestButton: {
-    borderRadius: 8,
-    backgroundColor: '#3498db',
-    height: 40,
-  },
-  requestButtonText: {
-    fontSize: 14,
+    backgroundColor: '#2980b9',
   },
 });
 
