@@ -28,6 +28,9 @@ const handleSchedule = (navigation) => {
 const handleMap = (navigation) => {
   navigation.navigate('MapScreen');
 };
+const handleFAQ = (navigation) => {
+  navigation.navigate('FAQ');
+}
 // Defines color for each stop status type
 const statusColors = {
   Completed: '#bbb',
@@ -38,10 +41,10 @@ const statusColors = {
 
 // List of quick action buttons with icons and labels
 const quickActions = [
-  { id: 1, label: 'Book Ride', icon: '🚍' },
-  { id: 2, label: 'Schedule', icon: '📅' },
+  { id: 1, label: 'Call Ride', icon: '📞' },
+  { id: 2, label: 'Request Stop', icon: '🚍' },
   { id: 3, label: 'Map', icon: '🗺️' },
-  { id: 4, label: 'Help', icon: '❓' },
+  { id: 4, label: 'FAQ', icon: '❓' },
 ];
 
 // Main screen component
@@ -96,15 +99,19 @@ const MainScreen = ({ navigation }) => {
   const onQuickActionPress = (action) => {
     console.log('Quick action pressed:', action.label);
 
-    if (action.label === 'Book Ride') {
+    if (action.label === 'Call Ride') {
       handleCall(); // Call driver
     }
-    if (action.label === 'Schedule') {
+    if (action.label === 'Request Stop') {
       handleSchedule(navigation); // Go to schedule screen
     }
     if (action.label === 'Map') {
       // Navigate to map screen (not implemented)
       handleMap(navigation); // Go to map screen
+    }
+
+    if (action.label === 'FAQ'){
+      handleFAQ(navigation) //go to FAQ Screen
     }
   };
   
