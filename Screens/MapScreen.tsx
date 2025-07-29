@@ -1,17 +1,27 @@
 import React, { useEffect, useState } from "react";
 import { View, ActivityIndicator, StyleSheet, TouchableOpacity, Text } from "react-native";
-import MapView from "react-native-maps";
+import MapView, { Marker, Polyline } from 'react-native-maps';
 import * as Location from "expo-location";
+import { GOOGLE_MAPS_API_KEY } from '@env';
+import axios from 'axios';
+import { Dimensions } from 'react-native';
+const { height } = Dimensions.get('window');
 
 export default function MapScreen({ navigation }) {
-  const [location, setLocation] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // defaults to Ford WHQ
-  const default_lat = 42.3174;
-  const default_long = 83.2105;
+  const [eta, setEta] = useState('');
+  const [location, setLocation] = useState(null);
+  const [origin, setOrigin] = useState(null);
+  const [routeCoords, setRouteCoords] = useState([]);
 
+  // to Ford WHQ
+  const destination = {
+    latitude: 42.3174,
+    longitude: -83.2105
+  }
   useEffect(() => {
+    // set loading
     (async () => {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
@@ -21,10 +31,78 @@ export default function MapScreen({ navigation }) {
       }
 
       const userLocation = await Location.getCurrentPositionAsync({});
-      setLocation(userLocation.coords);
+      setOrigin({
+        latitude: userLocation.coords.latitude,
+        longitude: userLocation.coords.longitude,
+      });
       setLoading(false);
     })();
   }, []);
+
+  useEffect(() => {
+    if (!origin) return;
+
+    const fetchRoute = async () => {
+      const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${origin.latitude},${origin.longitude}
+                  &destination=${destination.latitude},${destination.longitude}&key=${GOOGLE_MAPS_API_KEY}`;
+      console.log(destination)
+      console.log(origin)
+      try {
+        const response = await axios.get(url);
+        console.log('Google Maps response:', response.data);
+
+        const route = response.data.routes?.[0];
+        if (!route || !route.overview_polyline) {
+          console.warn('No routes found:', response.data);
+          return;
+        }
+        // points in route to draw
+        const points = decodePolyline(route.overview_polyline.points);
+        setRouteCoords(points);
+
+        // contains ETA
+        const leg = route.legs[0];
+        setEta(leg.duration.text); 
+      } catch (error) {
+        console.error('Error fetching route:', error.message);
+      }
+    };
+
+    fetchRoute();
+  }, [origin]);
+
+  const decodePolyline = (t) => {
+    let points = [];
+    let index = 0, lat = 0, lng = 0;
+
+    while (index < t.length) {
+      let b, shift = 0, result = 0;
+      do {
+        b = t.charCodeAt(index++) - 63;
+        result |= (b & 0x1f) << shift;
+        shift += 5;
+      } while (b >= 0x20);
+      const dlat = result & 1 ? ~(result >> 1) : result >> 1;
+      lat += dlat;
+
+      shift = 0;
+      result = 0;
+      do {
+        b = t.charCodeAt(index++) - 63;
+        result |= (b & 0x1f) << shift;
+        shift += 5;
+      } while (b >= 0x20);
+      const dlng = result & 1 ? ~(result >> 1) : result >> 1;
+      lng += dlng;
+
+      points.push({
+        latitude: lat / 1e5,
+        longitude: lng / 1e5,
+      });
+    }
+
+    return points;
+  };
 
   if (loading) {
     return <ActivityIndicator size="large" style={{ flex: 1 }} />;
@@ -39,16 +117,26 @@ export default function MapScreen({ navigation }) {
       >
         <Text style={styles.backButtonText}>{'< Back'}</Text>
       </TouchableOpacity>
-      <MapView
-        style={StyleSheet.absoluteFillObject}
-        initialRegion={{
-          latitude: location?.latitude ?? default_lat,
-          longitude: location?.longitude ?? default_long,
-          latitudeDelta: 0.01,
-          longitudeDelta: 0.01,
-        }}
-        showsUserLocation={true}
-      />
+
+      {origin && (
+        <MapView
+          style={{ height: height * 0.8, width: '100%' }}
+          initialRegion={{
+            ...origin,
+            latitudeDelta: 0.2,
+            longitudeDelta: 0.2,
+          }}
+        >
+          <Marker coordinate={origin} title="You are here" />
+          <Marker coordinate={destination} title="Destination" />
+          <Polyline coordinates={routeCoords} strokeWidth={4} strokeColor="blue" />
+        </MapView>
+      )}
+      {eta ? (
+      <View style={styles.etaBox}>
+        <Text style={styles.etaText}>Estimated Time: {eta}</Text>
+      </View>
+      ) : null}
     </View>
   );
 }
@@ -72,6 +160,23 @@ const styles = StyleSheet.create({
   backButtonText: {
     fontSize: 16,
     color: '#003366',
+    fontWeight: 'bold',
+  },
+   etaBox: {
+    position: 'absolute',
+    bottom: 40,
+    left: 20,
+    right: 20,
+    backgroundColor: 'white',
+    padding: 12,
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+  etaText: {
+    fontSize: 16,
     fontWeight: 'bold',
   },
 });
