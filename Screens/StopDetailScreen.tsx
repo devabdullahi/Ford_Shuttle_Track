@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Card } from 'react-native-paper';
-import Icon from 'react-native-vector-icons/MaterialIcons'; // or your preferred icon library
+import Icon from 'react-native-vector-icons/MaterialIcons'; 
 
 const StopDetailsScreen = ({ route, navigation }) => {
   const { stop } = route.params;

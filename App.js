@@ -25,10 +25,9 @@ export default function App() {
         <Stack.Screen name="StopDetails" component={StopDetailsScreen} screenOptions={{ headerShown: false }} />
         <Stack.Screen name="RequestStops" component={RequestStopScreen} />
         <Stack.Screen name="MapScreen" component={MapScreen} />
-        <Stack.Screen name="FAQ" component={FAQScreen}/>
+        <Stack.Screen name="FAQScreen" component={FAQScreen}/>
       </Stack.Navigator>
       }
-
     </NavigationContainer>
   );
 

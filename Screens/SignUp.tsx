@@ -11,6 +11,7 @@ import {
   // You might need Platform or other imports depending on further styling
 } from 'react-native';
 
+//password check with tests
 
 const SignUpScreen = ({navigation}) => {
   const [name, setName] = useState<string>('');
@@ -19,11 +20,9 @@ const SignUpScreen = ({navigation}) => {
 
   // We'll add a simple function to handle sign up action later
   const handleSignUp = () => {
-
     
       console.log('Signing up with:', { name, email, password });
 
-    // Add your sign-up logic here (e.g., API call, validation)
   };
 
    const handleGoogleSignUp = () => {
@@ -101,7 +100,7 @@ const SignUpScreen = ({navigation}) => {
         {/* Sign Up with Google Button */}
         <TouchableOpacity
             style={styles.signUpGoogleButton}
-            onPress={handleGoogleSignUp} // Add the action here
+            onPress={handleGoogleSignUp} 
         >
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
             <Image

@@ -29,7 +29,7 @@ const handleMap = (navigation) => {
   navigation.navigate('MapScreen');
 };
 const handleFAQ = (navigation) => {
-  navigation.navigate('FAQ');
+  navigation.navigate('FAQScreen');
 }
 // Defines color for each stop status type
 const statusColors = {

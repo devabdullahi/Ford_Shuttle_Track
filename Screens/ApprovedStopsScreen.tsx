@@ -15,7 +15,6 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import {
   collection,
   doc,
-  setDoc,
   getDoc,
   getFirestore,
   query,
