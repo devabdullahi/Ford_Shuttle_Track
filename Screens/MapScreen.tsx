@@ -4,9 +4,13 @@ import MapView, { Marker, Polyline } from 'react-native-maps';
 import * as Location from "expo-location";
 import { GOOGLE_MAPS_API_KEY } from '@env';
 import axios from 'axios';
+import { Dimensions } from 'react-native';
+const { height } = Dimensions.get('window');
 
 export default function MapScreen({ navigation }) {
   const [loading, setLoading] = useState(true);
+
+  const [eta, setEta] = useState('');
   const [location, setLocation] = useState(null);
   const [origin, setOrigin] = useState(null);
   const [routeCoords, setRouteCoords] = useState([]);
@@ -52,9 +56,13 @@ export default function MapScreen({ navigation }) {
           console.warn('No routes found:', response.data);
           return;
         }
-
+        // points in route to draw
         const points = decodePolyline(route.overview_polyline.points);
         setRouteCoords(points);
+
+        // contains ETA
+        const leg = route.legs[0];
+        setEta(leg.duration.text); 
       } catch (error) {
         console.error('Error fetching route:', error.message);
       }
@@ -112,7 +120,7 @@ export default function MapScreen({ navigation }) {
 
       {origin && (
         <MapView
-          style={StyleSheet.absoluteFill}
+          style={{ height: height * 0.8, width: '100%' }}
           initialRegion={{
             ...origin,
             latitudeDelta: 0.2,
@@ -124,6 +132,11 @@ export default function MapScreen({ navigation }) {
           <Polyline coordinates={routeCoords} strokeWidth={4} strokeColor="blue" />
         </MapView>
       )}
+      {eta ? (
+      <View style={styles.etaBox}>
+        <Text style={styles.etaText}>Estimated Time: {eta}</Text>
+      </View>
+      ) : null}
     </View>
   );
 }
@@ -147,6 +160,23 @@ const styles = StyleSheet.create({
   backButtonText: {
     fontSize: 16,
     color: '#003366',
+    fontWeight: 'bold',
+  },
+   etaBox: {
+    position: 'absolute',
+    bottom: 40,
+    left: 20,
+    right: 20,
+    backgroundColor: 'white',
+    padding: 12,
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+  etaText: {
+    fontSize: 16,
     fontWeight: 'bold',
   },
 });
